@@ -1492,9 +1492,9 @@ void QVirtualKeyboardInputEngine_VirtualKeyClicked(void* ptr, long long key, str
 	static_cast<QVirtualKeyboardInputEngine*>(ptr)->virtualKeyClicked(static_cast<Qt::Key>(key), QString::fromUtf8(text.data, text.len), static_cast<Qt::KeyboardModifier>(modifiers), isAutoRepeat != 0);
 }
 
-char QVirtualKeyboardInputEngine_VirtualKeyPress(void* ptr, long long key, struct QtVirtualKeyboard_PackedString text, long long modifiers, char repeat)
+char QVirtualKeyboardInputEngine_VirtualKeyPress(void* ptr, long long key, struct QtVirtualKeyboard_PackedString text, long long modifiers, char repe)
 {
-	return static_cast<QVirtualKeyboardInputEngine*>(ptr)->virtualKeyPress(static_cast<Qt::Key>(key), QString::fromUtf8(text.data, text.len), static_cast<Qt::KeyboardModifier>(modifiers), repeat != 0);
+	return static_cast<QVirtualKeyboardInputEngine*>(ptr)->virtualKeyPress(static_cast<Qt::Key>(key), QString::fromUtf8(text.data, text.len), static_cast<Qt::KeyboardModifier>(modifiers), repe != 0);
 }
 
 char QVirtualKeyboardInputEngine_VirtualKeyRelease(void* ptr, long long key, struct QtVirtualKeyboard_PackedString text, long long modifiers)
@@ -2585,9 +2585,9 @@ void QVirtualKeyboardTrace_SetChannels(void* ptr, struct QtVirtualKeyboard_Packe
 	static_cast<QVirtualKeyboardTrace*>(ptr)->setChannels(QString::fromUtf8(channels.data, channels.len).split("¡¦!", QString::SkipEmptyParts));
 }
 
-void QVirtualKeyboardTrace_SetFinal(void* ptr, char final)
+void QVirtualKeyboardTrace_SetFinal(void* ptr, char fin)
 {
-	static_cast<QVirtualKeyboardTrace*>(ptr)->setFinal(final != 0);
+	static_cast<QVirtualKeyboardTrace*>(ptr)->setFinal(fin != 0);
 }
 
 void QVirtualKeyboardTrace_SetOpacity(void* ptr, double opacity)

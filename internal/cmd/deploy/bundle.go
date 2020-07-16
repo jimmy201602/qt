@@ -37,14 +37,14 @@ func bundle(mode, target, path, name, depPath string, tagsCustom string, fast bo
 		}
 
 		var args []string
-		if _, err := ioutil.ReadDir(src); err == nil {
+		if utils.ExistsDir(src) {
 			if runtime.GOOS != "windows" || utils.MSYSTEM() != "" {
 				args = append(args, "-R")
 			}
 		}
 
 		var suffix string
-		if _, err := ioutil.ReadDir(dst); err != nil {
+		if !utils.ExistsDir(dst) {
 			if runtime.GOOS == "windows" && utils.MSYSTEM() == "" {
 				suffix = "*"
 			}
@@ -66,6 +66,17 @@ func bundle(mode, target, path, name, depPath string, tagsCustom string, fast bo
 		assets := filepath.Join(path, target)
 		utils.MkdirAll(assets)
 		copy(assets+"/.", filepath.Join(depPath, name+".app"))
+
+		if cmd.ImportsFlutter() {
+			utils.MkdirAll(filepath.Join(depPath, name+".app", "Contents", "Frameworks"))
+
+			copy(filepath.Join(path, "build", "flutter_assets"), filepath.Join(depPath, name+".app", "Contents", "MacOS", "flutter_assets"))
+			copy(filepath.Join(path, "FlutterEmbedder.framework"), filepath.Join(depPath, name+".app", "Contents", "Frameworks", "FlutterEmbedder.framework"))
+
+			if utils.QT_STATIC() {
+				utils.RunCmd(exec.Command("install_name_tool", "-add_rpath", "@executable_path/../Frameworks", filepath.Join(depPath, name+".app", "Contents", "MacOS", name)), "add an rpath to the binary")
+			}
+		}
 
 		if utils.QT_STATIC() {
 			break
@@ -100,7 +111,7 @@ func bundle(mode, target, path, name, depPath string, tagsCustom string, fast bo
 			break
 		}
 
-		prefPath := utils.QT_DIR()
+		prefPath := utils.QT_INSTALL_PREFIX(target)
 
 		start := bytes.Index(data, []byte(prefPath))
 		if start == -1 {
@@ -112,7 +123,7 @@ func bundle(mode, target, path, name, depPath string, tagsCustom string, fast bo
 			break
 		}
 
-		rep := append([]byte(prefPath), []byte(pPath)...)
+		rep := []byte(pPath)
 		if lendiff := end - len(rep); lendiff < 0 {
 			end -= lendiff
 		} else {
@@ -161,6 +172,18 @@ func bundle(mode, target, path, name, depPath string, tagsCustom string, fast bo
 		assets := filepath.Join(path, target)
 		utils.MkdirAll(assets)
 		copy(assets+"/.", depPath)
+
+		if cmd.ImportsFlutter() {
+			libDir := "lib"
+			if name == libDir {
+				libDir = "libs"
+			}
+			utils.MkdirAll(filepath.Join(depPath, libDir))
+
+			copy(filepath.Join(path, "build", "flutter_assets"), filepath.Join(depPath, "flutter_assets"))
+			copy(filepath.Join(path, "libflutter_engine.so"), filepath.Join(depPath, "lib", "libflutter_engine.so"))
+			copy(filepath.Join(path, "icudtl.dat"), filepath.Join(depPath, "icudtl.dat"))
+		}
 
 		if utils.QT_STATIC() || utils.QT_PKG_CONFIG() {
 			break
@@ -349,6 +372,19 @@ func bundle(mode, target, path, name, depPath string, tagsCustom string, fast bo
 		utils.MkdirAll(assets)
 		copy(assets+string(filepath.Separator)+".", depPath)
 
+		if cmd.ImportsFlutter() {
+			if runtime.GOOS == "windows" {
+				utils.MkdirAll(filepath.Join(depPath, "flutter_assets"))
+				copy(filepath.Join(path, "build", "flutter_assets"+string(filepath.Separator)+"."), filepath.Join(depPath, "flutter_assets"))
+			} else {
+				copy(filepath.Join(path, "build", "flutter_assets"), filepath.Join(depPath, "flutter_assets"))
+			}
+
+			//TODO: new generic copy method; xcopy is somewhat broken under wine
+			utils.Save(filepath.Join(depPath, "flutter_engine.dll"), utils.Load(filepath.Join(path, "flutter_engine.dll")))
+			utils.Save(filepath.Join(depPath, "icudtl.dat"), utils.Load(filepath.Join(path, "icudtl.dat")))
+		}
+
 		//TODO: -->
 		switch {
 		case runtime.GOOS != target:
@@ -425,11 +461,16 @@ func bundle(mode, target, path, name, depPath string, tagsCustom string, fast bo
 			utils.RunCmd(deploy, fmt.Sprintf("depoy %v on %v", target, runtime.GOOS))
 
 			var libraryPath = filepath.Join(utils.QT_MSYS2_DIR(), "bin")
-			for _, d := range []string{"libbz2-1", "libfreetype-6", "libglib-2.0-0", "libharfbuzz-0", "libiconv-2", "libintl-8", "libpcre-1", "libpcre16-0", "libpng16-16", "libstdc++-6", "libwinpthread-1", "zlib1", "libgraphite2", "libeay32", "ssleay32", "libcrypto-1_1-x64", "libpcre2-16-0", "libssl-1_1-x64", "libdouble-conversion"} {
+			for _, d := range []string{"libbz2-1", "libfreetype-6", "libglib-2.0-0", "libharfbuzz-0", "libiconv-2", "libintl-8", "libpcre-1", "libpcre16-0", "libpng16-16", "libstdc++-6", "libwinpthread-1", "zlib1", "libgraphite2", "libeay32", "ssleay32", "libcrypto-1_1-x64", "libpcre2-16-0", "libssl-1_1-x64", "libdouble-conversion", "libzstd"} {
 				if utils.QT_MSYS2_ARCH() == "386" {
 					d = strings.TrimSuffix(d, "-x64")
 				}
-				utils.RunCmdOptional(exec.Command(copyCmd, filepath.Join(libraryPath, fmt.Sprintf("%v.dll", d)), depPath), fmt.Sprintf("copy %v for %v on %v", d, target, runtime.GOOS))
+
+				if d == "libeay32" || d == "ssleay32" {
+					utils.RunCmdOptional(exec.Command(copyCmd, filepath.Join(utils.QT_MSYS2_DIR(), "..", "opt", "bin", fmt.Sprintf("%v.dll", d)), depPath), fmt.Sprintf("copy %v for %v on %v", d, target, runtime.GOOS))
+				} else {
+					utils.RunCmdOptional(exec.Command(copyCmd, filepath.Join(libraryPath, fmt.Sprintf("%v.dll", d)), depPath), fmt.Sprintf("copy %v for %v on %v", d, target, runtime.GOOS))
+				}
 			}
 			for _, icu := range []string{"icudt", "icuin", "icuuc"} {
 				for i := 55; i < 70; i++ {

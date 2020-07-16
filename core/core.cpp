@@ -12297,6 +12297,26 @@ long long QLibrary_LoadHints(void* ptr)
 	return static_cast<QLibrary*>(ptr)->loadHints();
 }
 
+void* QLibrary_Resolve(void* ptr, char* symbol)
+{
+	return reinterpret_cast<void*>(static_cast<QLibrary*>(ptr)->resolve(const_cast<const char*>(symbol)));
+}
+
+void* QLibrary_QLibrary_Resolve2(struct QtCore_PackedString fileName, char* symbol)
+{
+	return reinterpret_cast<void*>(QLibrary::resolve(QString::fromUtf8(fileName.data, fileName.len), const_cast<const char*>(symbol)));
+}
+
+void* QLibrary_QLibrary_Resolve3(struct QtCore_PackedString fileName, int verNum, char* symbol)
+{
+	return reinterpret_cast<void*>(QLibrary::resolve(QString::fromUtf8(fileName.data, fileName.len), verNum, const_cast<const char*>(symbol)));
+}
+
+void* QLibrary_QLibrary_Resolve4(struct QtCore_PackedString fileName, struct QtCore_PackedString version, char* symbol)
+{
+	return reinterpret_cast<void*>(QLibrary::resolve(QString::fromUtf8(fileName.data, fileName.len), QString::fromUtf8(version.data, version.len), const_cast<const char*>(symbol)));
+}
+
 void QLibrary_SetFileName(void* ptr, struct QtCore_PackedString fileName)
 {
 	static_cast<QLibrary*>(ptr)->setFileName(QString::fromUtf8(fileName.data, fileName.len));
@@ -14072,14 +14092,14 @@ char QMetaType_QMetaType_Compare(void* lhs, void* rhs, int typeId, int result)
 	return QMetaType::compare(lhs, rhs, typeId, &result);
 }
 
-void* QMetaType_QMetaType_Construct2(int ty, void* where, void* copy)
+void* QMetaType_QMetaType_Construct2(int ty, void* whe, void* copy)
 {
-	return QMetaType::construct(ty, where, copy);
+	return QMetaType::construct(ty, whe, copy);
 }
 
-void* QMetaType_Construct3(void* ptr, void* where, void* copy)
+void* QMetaType_Construct3(void* ptr, void* whe, void* copy)
 {
-	return static_cast<QMetaType*>(ptr)->construct(where, copy);
+	return static_cast<QMetaType*>(ptr)->construct(whe, copy);
 }
 
 char QMetaType_QMetaType_Convert(void* from, int fromTypeId, void* to, int toTypeId)
@@ -14112,9 +14132,9 @@ void QMetaType_Destroy2(void* ptr, void* data)
 	static_cast<QMetaType*>(ptr)->destroy(data);
 }
 
-void QMetaType_QMetaType_Destruct(int ty, void* where)
+void QMetaType_QMetaType_Destruct(int ty, void* whe)
 {
-	QMetaType::destruct(ty, where);
+	QMetaType::destruct(ty, whe);
 }
 
 void QMetaType_Destruct2(void* ptr, void* data)

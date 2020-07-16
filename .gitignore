@@ -16,6 +16,11 @@ Mfile*
 */cgo_*
 */minimal_*
 */*.d.ts
+*/*.dart
+*/*.hx
+*/*.swift
+
+interop/moc*
 
 /internal/binding/dump/*
 /internal/binding/runtime/moc*
@@ -24,3 +29,5 @@ Mfile*
 /internal/examples/**/moc*
 /internal/examples/**/rcc*
 /internal/examples/**/uic*
+
+flutter/*lutter*

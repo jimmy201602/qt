@@ -425,6 +425,8 @@ func GoList(args ...string) *exec.Cmd {
 	if UseGOMOD("") {
 		if !(strings.Contains(strings.Join(args, "|"), "github.com/therecipe/qt/internal") && !strings.Contains(strings.Join(args, "|"), "github.com/therecipe/qt/internal/binding/runtime")) {
 			cmd.Args = append(cmd.Args, GOFLAGS())
+		} else if GOVERSION_NUM() >= 114 {
+			cmd.Args = append(cmd.Args, "-mod=mod")
 		}
 		cmd.Dir = filepath.Dir(GOMOD(""))
 	}
@@ -515,4 +517,16 @@ func QT_RESOURCES_BIG() bool {
 
 func QT_GEN_TSD() bool {
 	return os.Getenv("QT_GEN_TSD") == "true"
+}
+
+func QT_GEN_DART() bool {
+	return os.Getenv("QT_GEN_DART") == "true"
+}
+
+func QT_GEN_HAXE() bool {
+	return os.Getenv("QT_GEN_HAXE") == "true"
+}
+
+func QT_GEN_SWIFT() bool {
+	return os.Getenv("QT_GEN_SWIFT") == "true"
 }

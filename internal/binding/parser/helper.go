@@ -154,7 +154,13 @@ func CleanName(name, value string) string {
 		"runtime",
 		"time",
 		"hex",
-		"script":
+		"script",
+		"final",
+		"where",
+		"extension",
+		"protocol",
+		"self",
+		"repeat":
 		{
 			return name[:len(name)-2]
 		}

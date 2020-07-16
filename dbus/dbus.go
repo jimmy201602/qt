@@ -26,7 +26,7 @@ func cGoUnpackBytes(s C.struct_QtDBus_PackedString) []byte {
 	defer cGoFreePacked(s.ptr)
 	if int(s.len) == -1 {
 		gs := C.GoString(s.data)
-		return *(*[]byte)(unsafe.Pointer(&gs))
+		return []byte(gs)
 	}
 	return C.GoBytes(unsafe.Pointer(s.data), C.int(s.len))
 }
@@ -3494,14 +3494,14 @@ func NewQDBusPendingCallWatcher(call QDBusPendingCall_ITF, parent core.QObject_I
 }
 
 //export callbackQDBusPendingCallWatcher_Finished
-func callbackQDBusPendingCallWatcher_Finished(ptr unsafe.Pointer, self unsafe.Pointer) {
+func callbackQDBusPendingCallWatcher_Finished(ptr unsafe.Pointer, se unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "finished"); signal != nil {
-		(*(*func(*QDBusPendingCallWatcher))(signal))(NewQDBusPendingCallWatcherFromPointer(self))
+		(*(*func(*QDBusPendingCallWatcher))(signal))(NewQDBusPendingCallWatcherFromPointer(se))
 	}
 
 }
 
-func (ptr *QDBusPendingCallWatcher) ConnectFinished(f func(self *QDBusPendingCallWatcher)) {
+func (ptr *QDBusPendingCallWatcher) ConnectFinished(f func(se *QDBusPendingCallWatcher)) {
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "finished") {
@@ -3509,9 +3509,9 @@ func (ptr *QDBusPendingCallWatcher) ConnectFinished(f func(self *QDBusPendingCal
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "finished"); signal != nil {
-			f := func(self *QDBusPendingCallWatcher) {
-				(*(*func(*QDBusPendingCallWatcher))(signal))(self)
-				f(self)
+			f := func(se *QDBusPendingCallWatcher) {
+				(*(*func(*QDBusPendingCallWatcher))(signal))(se)
+				f(se)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "finished", unsafe.Pointer(&f))
 		} else {
@@ -3527,9 +3527,9 @@ func (ptr *QDBusPendingCallWatcher) DisconnectFinished() {
 	}
 }
 
-func (ptr *QDBusPendingCallWatcher) Finished(self QDBusPendingCallWatcher_ITF) {
+func (ptr *QDBusPendingCallWatcher) Finished(se QDBusPendingCallWatcher_ITF) {
 	if ptr.Pointer() != nil {
-		C.QDBusPendingCallWatcher_Finished(ptr.Pointer(), PointerFromQDBusPendingCallWatcher(self))
+		C.QDBusPendingCallWatcher_Finished(ptr.Pointer(), PointerFromQDBusPendingCallWatcher(se))
 	}
 }
 
@@ -5870,7 +5870,9 @@ func init() {
 	qt.FuncMap["dbus.QDBusPendingCall_FromError"] = QDBusPendingCall_FromError
 	qt.ItfMap["dbus.QDBusPendingCallWatcher_ITF"] = QDBusPendingCallWatcher{}
 	qt.FuncMap["dbus.NewQDBusPendingCallWatcher"] = NewQDBusPendingCallWatcher
+	qt.ItfMap["dbus.QDBusPendingReply_ITF"] = QDBusPendingReply{}
 	qt.ItfMap["dbus.QDBusPendingReplyData_ITF"] = QDBusPendingReplyData{}
+	qt.ItfMap["dbus.QDBusReply_ITF"] = QDBusReply{}
 	qt.ItfMap["dbus.QDBusServer_ITF"] = QDBusServer{}
 	qt.FuncMap["dbus.NewQDBusServer"] = NewQDBusServer
 	qt.FuncMap["dbus.NewQDBusServer2"] = NewQDBusServer2

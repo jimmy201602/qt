@@ -27,7 +27,7 @@ func cGoUnpackBytes(s C.struct_QtNetwork_PackedString) []byte {
 	defer cGoFreePacked(s.ptr)
 	if int(s.len) == -1 {
 		gs := C.GoString(s.data)
-		return *(*[]byte)(unsafe.Pointer(&gs))
+		return []byte(gs)
 	}
 	return C.GoBytes(unsafe.Pointer(s.data), C.int(s.len))
 }
@@ -928,21 +928,21 @@ func (ptr *QAbstractSocket) CloseDefault() {
 }
 
 //export callbackQAbstractSocket_ConnectToHost
-func callbackQAbstractSocket_ConnectToHost(ptr unsafe.Pointer, hostName C.struct_QtNetwork_PackedString, port C.ushort, openMode C.longlong, protocol C.longlong) {
+func callbackQAbstractSocket_ConnectToHost(ptr unsafe.Pointer, hostName C.struct_QtNetwork_PackedString, port C.ushort, openMode C.longlong, protoc C.longlong) {
 	if signal := qt.GetSignal(ptr, "connectToHost"); signal != nil {
-		(*(*func(string, uint16, core.QIODevice__OpenModeFlag, QAbstractSocket__NetworkLayerProtocol))(signal))(cGoUnpackString(hostName), uint16(port), core.QIODevice__OpenModeFlag(openMode), QAbstractSocket__NetworkLayerProtocol(protocol))
+		(*(*func(string, uint16, core.QIODevice__OpenModeFlag, QAbstractSocket__NetworkLayerProtocol))(signal))(cGoUnpackString(hostName), uint16(port), core.QIODevice__OpenModeFlag(openMode), QAbstractSocket__NetworkLayerProtocol(protoc))
 	} else {
-		NewQAbstractSocketFromPointer(ptr).ConnectToHostDefault(cGoUnpackString(hostName), uint16(port), core.QIODevice__OpenModeFlag(openMode), QAbstractSocket__NetworkLayerProtocol(protocol))
+		NewQAbstractSocketFromPointer(ptr).ConnectToHostDefault(cGoUnpackString(hostName), uint16(port), core.QIODevice__OpenModeFlag(openMode), QAbstractSocket__NetworkLayerProtocol(protoc))
 	}
 }
 
-func (ptr *QAbstractSocket) ConnectConnectToHost(f func(hostName string, port uint16, openMode core.QIODevice__OpenModeFlag, protocol QAbstractSocket__NetworkLayerProtocol)) {
+func (ptr *QAbstractSocket) ConnectConnectToHost(f func(hostName string, port uint16, openMode core.QIODevice__OpenModeFlag, protoc QAbstractSocket__NetworkLayerProtocol)) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "connectToHost"); signal != nil {
-			f := func(hostName string, port uint16, openMode core.QIODevice__OpenModeFlag, protocol QAbstractSocket__NetworkLayerProtocol) {
-				(*(*func(string, uint16, core.QIODevice__OpenModeFlag, QAbstractSocket__NetworkLayerProtocol))(signal))(hostName, port, openMode, protocol)
-				f(hostName, port, openMode, protocol)
+			f := func(hostName string, port uint16, openMode core.QIODevice__OpenModeFlag, protoc QAbstractSocket__NetworkLayerProtocol) {
+				(*(*func(string, uint16, core.QIODevice__OpenModeFlag, QAbstractSocket__NetworkLayerProtocol))(signal))(hostName, port, openMode, protoc)
+				f(hostName, port, openMode, protoc)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "connectToHost", unsafe.Pointer(&f))
 		} else {
@@ -958,25 +958,25 @@ func (ptr *QAbstractSocket) DisconnectConnectToHost() {
 	}
 }
 
-func (ptr *QAbstractSocket) ConnectToHost(hostName string, port uint16, openMode core.QIODevice__OpenModeFlag, protocol QAbstractSocket__NetworkLayerProtocol) {
+func (ptr *QAbstractSocket) ConnectToHost(hostName string, port uint16, openMode core.QIODevice__OpenModeFlag, protoc QAbstractSocket__NetworkLayerProtocol) {
 	if ptr.Pointer() != nil {
 		var hostNameC *C.char
 		if hostName != "" {
 			hostNameC = C.CString(hostName)
 			defer C.free(unsafe.Pointer(hostNameC))
 		}
-		C.QAbstractSocket_ConnectToHost(ptr.Pointer(), C.struct_QtNetwork_PackedString{data: hostNameC, len: C.longlong(len(hostName))}, C.ushort(port), C.longlong(openMode), C.longlong(protocol))
+		C.QAbstractSocket_ConnectToHost(ptr.Pointer(), C.struct_QtNetwork_PackedString{data: hostNameC, len: C.longlong(len(hostName))}, C.ushort(port), C.longlong(openMode), C.longlong(protoc))
 	}
 }
 
-func (ptr *QAbstractSocket) ConnectToHostDefault(hostName string, port uint16, openMode core.QIODevice__OpenModeFlag, protocol QAbstractSocket__NetworkLayerProtocol) {
+func (ptr *QAbstractSocket) ConnectToHostDefault(hostName string, port uint16, openMode core.QIODevice__OpenModeFlag, protoc QAbstractSocket__NetworkLayerProtocol) {
 	if ptr.Pointer() != nil {
 		var hostNameC *C.char
 		if hostName != "" {
 			hostNameC = C.CString(hostName)
 			defer C.free(unsafe.Pointer(hostNameC))
 		}
-		C.QAbstractSocket_ConnectToHostDefault(ptr.Pointer(), C.struct_QtNetwork_PackedString{data: hostNameC, len: C.longlong(len(hostName))}, C.ushort(port), C.longlong(openMode), C.longlong(protocol))
+		C.QAbstractSocket_ConnectToHostDefault(ptr.Pointer(), C.struct_QtNetwork_PackedString{data: hostNameC, len: C.longlong(len(hostName))}, C.ushort(port), C.longlong(openMode), C.longlong(protoc))
 	}
 }
 
@@ -16558,13 +16558,13 @@ func NewQSslCipher2(name string) *QSslCipher {
 	return tmpValue
 }
 
-func NewQSslCipher3(name string, protocol QSsl__SslProtocol) *QSslCipher {
+func NewQSslCipher3(name string, protoc QSsl__SslProtocol) *QSslCipher {
 	var nameC *C.char
 	if name != "" {
 		nameC = C.CString(name)
 		defer C.free(unsafe.Pointer(nameC))
 	}
-	tmpValue := NewQSslCipherFromPointer(C.QSslCipher_NewQSslCipher3(C.struct_QtNetwork_PackedString{data: nameC, len: C.longlong(len(name))}, C.longlong(protocol)))
+	tmpValue := NewQSslCipherFromPointer(C.QSslCipher_NewQSslCipher3(C.struct_QtNetwork_PackedString{data: nameC, len: C.longlong(len(name))}, C.longlong(protoc)))
 	qt.SetFinalizer(tmpValue, (*QSslCipher).DestroyQSslCipher)
 	return tmpValue
 }
@@ -17075,9 +17075,9 @@ func (ptr *QSslConfiguration) SetPrivateKey(key QSslKey_ITF) {
 	}
 }
 
-func (ptr *QSslConfiguration) SetProtocol(protocol QSsl__SslProtocol) {
+func (ptr *QSslConfiguration) SetProtocol(protoc QSsl__SslProtocol) {
 	if ptr.Pointer() != nil {
-		C.QSslConfiguration_SetProtocol(ptr.Pointer(), C.longlong(protocol))
+		C.QSslConfiguration_SetProtocol(ptr.Pointer(), C.longlong(protoc))
 	}
 }
 
@@ -18336,18 +18336,18 @@ func (ptr *QSslSocket) AddDefaultCaCertificates2(certificates []*QSslCertificate
 	}())
 }
 
-func (ptr *QSslSocket) ConnectToHostEncrypted(hostName string, port uint16, mode core.QIODevice__OpenModeFlag, protocol QAbstractSocket__NetworkLayerProtocol) {
+func (ptr *QSslSocket) ConnectToHostEncrypted(hostName string, port uint16, mode core.QIODevice__OpenModeFlag, protoc QAbstractSocket__NetworkLayerProtocol) {
 	if ptr.Pointer() != nil {
 		var hostNameC *C.char
 		if hostName != "" {
 			hostNameC = C.CString(hostName)
 			defer C.free(unsafe.Pointer(hostNameC))
 		}
-		C.QSslSocket_ConnectToHostEncrypted(ptr.Pointer(), C.struct_QtNetwork_PackedString{data: hostNameC, len: C.longlong(len(hostName))}, C.ushort(port), C.longlong(mode), C.longlong(protocol))
+		C.QSslSocket_ConnectToHostEncrypted(ptr.Pointer(), C.struct_QtNetwork_PackedString{data: hostNameC, len: C.longlong(len(hostName))}, C.ushort(port), C.longlong(mode), C.longlong(protoc))
 	}
 }
 
-func (ptr *QSslSocket) ConnectToHostEncrypted2(hostName string, port uint16, sslPeerName string, mode core.QIODevice__OpenModeFlag, protocol QAbstractSocket__NetworkLayerProtocol) {
+func (ptr *QSslSocket) ConnectToHostEncrypted2(hostName string, port uint16, sslPeerName string, mode core.QIODevice__OpenModeFlag, protoc QAbstractSocket__NetworkLayerProtocol) {
 	if ptr.Pointer() != nil {
 		var hostNameC *C.char
 		if hostName != "" {
@@ -18359,7 +18359,7 @@ func (ptr *QSslSocket) ConnectToHostEncrypted2(hostName string, port uint16, ssl
 			sslPeerNameC = C.CString(sslPeerName)
 			defer C.free(unsafe.Pointer(sslPeerNameC))
 		}
-		C.QSslSocket_ConnectToHostEncrypted2(ptr.Pointer(), C.struct_QtNetwork_PackedString{data: hostNameC, len: C.longlong(len(hostName))}, C.ushort(port), C.struct_QtNetwork_PackedString{data: sslPeerNameC, len: C.longlong(len(sslPeerName))}, C.longlong(mode), C.longlong(protocol))
+		C.QSslSocket_ConnectToHostEncrypted2(ptr.Pointer(), C.struct_QtNetwork_PackedString{data: hostNameC, len: C.longlong(len(hostName))}, C.ushort(port), C.struct_QtNetwork_PackedString{data: sslPeerNameC, len: C.longlong(len(sslPeerName))}, C.longlong(mode), C.longlong(protoc))
 	}
 }
 
@@ -18828,9 +18828,9 @@ func (ptr *QSslSocket) SetPrivateKey2(fileName string, algorithm QSsl__KeyAlgori
 	}
 }
 
-func (ptr *QSslSocket) SetProtocol(protocol QSsl__SslProtocol) {
+func (ptr *QSslSocket) SetProtocol(protoc QSsl__SslProtocol) {
 	if ptr.Pointer() != nil {
-		C.QSslSocket_SetProtocol(ptr.Pointer(), C.longlong(protocol))
+		C.QSslSocket_SetProtocol(ptr.Pointer(), C.longlong(protoc))
 	}
 }
 
@@ -20554,6 +20554,7 @@ func init() {
 	qt.ItfMap["network.QDnsTextRecord_ITF"] = QDnsTextRecord{}
 	qt.FuncMap["network.NewQDnsTextRecord"] = NewQDnsTextRecord
 	qt.FuncMap["network.NewQDnsTextRecord2"] = NewQDnsTextRecord2
+	qt.ItfMap["network.QDtls_ITF"] = QDtls{}
 	qt.EnumMap["network.QDtls__NoError"] = int64(QDtls__NoError)
 	qt.EnumMap["network.QDtls__InvalidInputParameters"] = int64(QDtls__InvalidInputParameters)
 	qt.EnumMap["network.QDtls__InvalidOperation"] = int64(QDtls__InvalidOperation)
@@ -20567,6 +20568,7 @@ func init() {
 	qt.EnumMap["network.QDtls__HandshakeInProgress"] = int64(QDtls__HandshakeInProgress)
 	qt.EnumMap["network.QDtls__PeerVerificationFailed"] = int64(QDtls__PeerVerificationFailed)
 	qt.EnumMap["network.QDtls__HandshakeComplete"] = int64(QDtls__HandshakeComplete)
+	qt.ItfMap["network.QDtlsClientVerifier_ITF"] = QDtlsClientVerifier{}
 	qt.ItfMap["network.QHostAddress_ITF"] = QHostAddress{}
 	qt.FuncMap["network.NewQHostAddress"] = NewQHostAddress
 	qt.FuncMap["network.NewQHostAddress2"] = NewQHostAddress2
@@ -20907,6 +20909,9 @@ func init() {
 	qt.EnumMap["network.QOcspResponse__CessationOfOperation"] = int64(QOcspResponse__CessationOfOperation)
 	qt.EnumMap["network.QOcspResponse__CertificateHold"] = int64(QOcspResponse__CertificateHold)
 	qt.EnumMap["network.QOcspResponse__RemoveFromCRL"] = int64(QOcspResponse__RemoveFromCRL)
+	qt.ItfMap["network.QPasswordDigestor_ITF"] = QPasswordDigestor{}
+	qt.ItfMap["network.QSctpServer_ITF"] = QSctpServer{}
+	qt.ItfMap["network.QSctpSocket_ITF"] = QSctpSocket{}
 	qt.ItfMap["network.QSsl_ITF"] = QSsl{}
 	qt.EnumMap["network.QSsl__PrivateKey"] = int64(QSsl__PrivateKey)
 	qt.EnumMap["network.QSsl__PublicKey"] = int64(QSsl__PublicKey)

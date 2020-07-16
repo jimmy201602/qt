@@ -102,6 +102,9 @@ func Deploy(mode, target, path string, docker bool, ldFlags, tags string, fast b
 		}
 
 		rcc.Rcc(path, target, tags, os.Getenv("QTRCC_OUTPUT_DIR"), useuic, quickcompiler, true, true)
+		if cmd.ImportsFlutter() {
+			flutter(target, path)
+		}
 		if !fast {
 			moc.Moc(path, target, tags, false, false, true, true)
 		}

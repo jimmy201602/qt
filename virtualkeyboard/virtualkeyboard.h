@@ -266,7 +266,7 @@ char QVirtualKeyboardInputEngine_VirtualKeyClick(void* ptr, long long key, struc
 void QVirtualKeyboardInputEngine_ConnectVirtualKeyClicked(void* ptr, long long t);
 void QVirtualKeyboardInputEngine_DisconnectVirtualKeyClicked(void* ptr);
 void QVirtualKeyboardInputEngine_VirtualKeyClicked(void* ptr, long long key, struct QtVirtualKeyboard_PackedString text, long long modifiers, char isAutoRepeat);
-char QVirtualKeyboardInputEngine_VirtualKeyPress(void* ptr, long long key, struct QtVirtualKeyboard_PackedString text, long long modifiers, char repeat);
+char QVirtualKeyboardInputEngine_VirtualKeyPress(void* ptr, long long key, struct QtVirtualKeyboard_PackedString text, long long modifiers, char repe);
 char QVirtualKeyboardInputEngine_VirtualKeyRelease(void* ptr, long long key, struct QtVirtualKeyboard_PackedString text, long long modifiers);
 void* QVirtualKeyboardInputEngine_WordCandidateListModel(void* ptr);
 void QVirtualKeyboardInputEngine_ConnectWordCandidateListModelChanged(void* ptr, long long t);
@@ -458,7 +458,7 @@ struct QtVirtualKeyboard_PackedList QVirtualKeyboardTrace_Points(void* ptr, int 
 void QVirtualKeyboardTrace_SetCanceled(void* ptr, char canceled);
 void QVirtualKeyboardTrace_SetChannelData(void* ptr, struct QtVirtualKeyboard_PackedString channel, int index, void* data);
 void QVirtualKeyboardTrace_SetChannels(void* ptr, struct QtVirtualKeyboard_PackedString channels);
-void QVirtualKeyboardTrace_SetFinal(void* ptr, char final);
+void QVirtualKeyboardTrace_SetFinal(void* ptr, char fin);
 void QVirtualKeyboardTrace_SetOpacity(void* ptr, double opacity);
 void QVirtualKeyboardTrace_SetTraceId(void* ptr, int id);
 int QVirtualKeyboardTrace_TraceId(void* ptr);
